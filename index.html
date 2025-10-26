@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Panel Kasy Roblox</title>
+  <style>
+    body { font-family: Arial; padding:20px; background:#f4f4f8; }
+    .card { max-width:500px; margin:auto; padding:20px; background:white; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+    input, button { width:100%; padding:8px; margin:5px 0; font-size:16px; }
+    .row { display:flex; gap:10px; }
+    .row > * { flex:1; }
+    .small { font-size:13px; color:#555; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Panel Kasy Roblox</h2>
+    <div class="small">Podaj dokładny nick gracza i ilość</div>
+    <input id="playerName" placeholder="Nazwa gracza">
+    <input id="amount" type="number" placeholder="Ilość">
+    <div class="row">
+      <button id="addBtn">➕ Dodaj kasę</button>
+      <button id="subBtn">➖ Odejmij kasę</button>
+    </div>
+    <input id="firebaseUrl" placeholder="URL Firebase">
+    <input id="secretKey" placeholder="Twój secretKey">
+    <div id="status" class="small"></div>
+  </div>
+
+<script>
+(async()=>{
+  const addBtn = document.getElementById('addBtn');
+  const subBtn = document.getElementById('subBtn');
+  const status = document.getElementById('status');
+
+  function getFirebaseUrl(){ return document.getElementById('firebaseUrl').value.trim(); }
+  function getSecretKey(){ return document.getElementById('secretKey').value.trim(); }
+
+  async function sendCommand(playerName, amount, action){
+    if(!playerName){ status.textContent="Wpisz nazwę gracza"; return; }
+    if(isNaN(amount)){ status.textContent="Wpisz poprawną ilość"; return; }
+    const base = getFirebaseUrl();
+    if(!base){ status.textContent="Wklej URL Firebase"; return; }
+
+    const payload = {
+      playerName: playerName,
+      action: action,
+      amount: Number(amount),
+      createdAt: Date.now(),
+      secretKey: getSecretKey()
+    };
+
+    try{
+      const resp = await fetch(base+'/commands.json',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(!resp.ok) throw new Error(await resp.text());
+      status.textContent=`Wysłano ${action} ${amount} do ${playerName}`;
+    }catch(e){ status.textContent='Błąd: '+e.message; console.error(e); }
+  }
+
+  addBtn.onclick = ()=>sendCommand(document.getElementById('playerName').value,
+                                   document.getElementById('amount').value,'add');
+  subBtn.onclick = ()=>sendCommand(document.getElementById('playerName').value,
+                                   document.getElementById('amount').value,'sub');
+})();
+</script>
+</body>
+</html>
