@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Kasy Roblox</title>
+<style>
+  body {
+    background: #111;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+    margin-top: 50px;
+  }
+  input, button {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+  }
+  input {
+    width: 200px;
+  }
+  button {
+    background: #00c853;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #00e676;
+  }
+  .minus {
+    background: #d50000;
+  }
+  .minus:hover {
+    background: #ff1744;
+  }
+</style>
+</head>
+<body>
+  <h1>💰 Panel Kasy Roblox 💰</h1>
+  <input id="playerName" type="text" placeholder="Nazwa gracza"><br>
+  <input id="amount" type="number" placeholder="Ilość"><br>
+  <button onclick="addMoney()">➕ Dodaj kasę</button>
+  <button class="minus" onclick="removeMoney()">➖ Odejmij kasę</button>
+
+  <script>
+    const firebaseUrl = "https://money-731d4-default-rtdb.europe-west1.firebasedatabase.app";
+
+    async function addMoney() {
+      const player = document.getElementById("playerName").value.trim();
+      const amount = parseInt(document.getElementById("amount").value);
+
+      if (!player || isNaN(amount)) return alert("Uzupełnij wszystkie pola!");
+
+      await fetch(`${firebaseUrl}/commands.json`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player: player, action: "add", amount: amount })
+      });
+
+      alert(`Dodano ${amount} graczowi ${player}`);
+    }
+
+    async function removeMoney() {
+      const player = document.getElementById("playerName").value.trim();
+      const amount = parseInt(document.getElementById("amount").value);
+
+      if (!player || isNaN(amount)) return alert("Uzupełnij wszystkie pola!");
+
+      await fetch(`${firebaseUrl}/commands.json`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ player: player, action: "remove", amount: amount })
+      });
+
+      alert(`Odjęto ${amount} graczowi ${player}`);
+    }
+  </script>
+</body>
+</html>
