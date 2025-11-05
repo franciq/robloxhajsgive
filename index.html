@@ -4,44 +4,108 @@
   <meta charset="UTF-8">
   <title>Status gry Roblox</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: white;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #111827, #1e293b);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #00a2ff;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      width: 320px;
       text-align: center;
-      margin-top: 100px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #00bfff;
+    }
+
+    .label {
+      font-size: 1rem;
+      color: #cbd5e1;
+    }
+
+    .buttons {
+      margin-top: 25px;
+    }
+
     button {
-      background: #00a2ff;
+      background: linear-gradient(135deg, #00a2ff, #007acc);
       border: none;
-      padding: 15px 30px;
-      margin: 10px;
       border-radius: 10px;
+      padding: 12px 25px;
       color: white;
-      font-size: 18px;
+      font-size: 1rem;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
+      margin: 5px;
     }
+
     button:hover {
-      background: #007acc;
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #0ea5e9, #0369a1);
     }
-    #wynik {
-      margin-top: 20px;
-      font-size: 22px;
-    }
+
     #czas {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #ccc;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      color: #64748b;
     }
   </style>
 </head>
 <body>
   <h1>Status twojej gry Roblox</h1>
-  <button onclick="pokazOnline()">👥 Ile osób gra teraz</button>
-  <button onclick="pokazVisits()">📊 Ile osób zagrało ogółem</button>
-  <div id="wynik"></div>
-  <div id="czas"></div>
+
+  <div class="card">
+    <div id="online" class="value">0</div>
+    <div class="label">Graczy teraz online</div>
+    <div id="visits" class="value" style="margin-top:20px;">0</div>
+    <div class="label">Łączna liczba graczy</div>
+    <div class="buttons">
+      <button onclick="pokazOnline()">👥 Odśwież online</button>
+      <button onclick="pokazVisits()">📊 Odśwież odwiedziny</button>
+    </div>
+    <div id="czas"></div>
+  </div>
+
+  <footer>© 2025 dc frvvnek_</footer>
 
   <script>
     const gameId = "90166277380078";
@@ -55,26 +119,32 @@
     async function pokazOnline() {
       const info = await pobierzDane();
       const count = info?.playing || 0;
-      document.getElementById("wynik").textContent = `🎮 Teraz gra: ${count} osób`;
+      document.getElementById("online").textContent = count.toLocaleString();
+      aktualizujCzas();
     }
 
     async function pokazVisits() {
       const info = await pobierzDane();
       const visits = info?.visits || 0;
-      document.getElementById("wynik").textContent = `📈 Łącznie zagrało: ${visits.toLocaleString()} osób`;
+      document.getElementById("visits").textContent = visits.toLocaleString();
+      aktualizujCzas();
     }
 
     async function autoUpdate() {
       const info = await pobierzDane();
       const count = info?.playing || 0;
       const visits = info?.visits || 0;
-      document.getElementById("wynik").innerHTML =
-        `🎮 Teraz gra: ${count} osób<br>📈 Łącznie zagrało: ${visits.toLocaleString()} osób`;
-      document.getElementById("czas").textContent =
-        `🔄 Ostatnia aktualizacja: ${new Date().toLocaleTimeString()}`;
+      document.getElementById("online").textContent = count.toLocaleString();
+      document.getElementById("visits").textContent = visits.toLocaleString();
+      aktualizujCzas();
     }
 
-    // 🔁 Aktualizuj automatycznie co 5 sekund
+    function aktualizujCzas() {
+      document.getElementById("czas").textContent = 
+        "🔄 Ostatnia aktualizacja: " + new Date().toLocaleTimeString();
+    }
+
+    // Auto-update co 5 sekund
     autoUpdate();
     setInterval(autoUpdate, 5000);
   </script>
