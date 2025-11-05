@@ -11,7 +11,7 @@
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #111827, #1e293b);
+      background: linear-gradient(135deg, #0f172a, #1e293b);
       color: #f8fafc;
       display: flex;
       flex-direction: column;
@@ -19,33 +19,36 @@
       justify-content: center;
       min-height: 100vh;
       padding: 20px;
+      overflow-x: hidden;
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       font-weight: 600;
       margin-bottom: 30px;
-      text-shadow: 0 0 10px #00a2ff;
+      text-shadow: 0 0 10px #00bfff;
+      text-align: center;
     }
 
     .card {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 20px;
-      padding: 30px;
+      padding: 35px 25px;
       width: 320px;
       text-align: center;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
     }
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
     }
 
     .value {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
       margin: 10px 0;
       color: #00bfff;
@@ -61,7 +64,7 @@
     }
 
     button {
-      background: linear-gradient(135deg, #00a2ff, #007acc);
+      background: linear-gradient(135deg, #00bfff, #007acc);
       border: none;
       border-radius: 10px;
       padding: 12px 25px;
@@ -74,7 +77,7 @@
 
     button:hover {
       transform: scale(1.05);
-      background: linear-gradient(135deg, #0ea5e9, #0369a1);
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
     }
 
     #czas {
@@ -88,65 +91,79 @@
       font-size: 0.8rem;
       color: #64748b;
     }
+
+    footer span {
+      color: #00bfff;
+    }
   </style>
 </head>
 <body>
-  <h1>Status twojej gry Roblox</h1>
+  <h1>Status gry Roblox: <br><span style="color:#00bfff;">Pomerania Roads</span></h1>
 
   <div class="card">
     <div id="online" class="value">0</div>
     <div class="label">Graczy teraz online</div>
+
     <div id="visits" class="value" style="margin-top:20px;">0</div>
-    <div class="label">Łączna liczba graczy</div>
+    <div class="label">Łączna liczba odwiedzin</div>
+
     <div class="buttons">
       <button onclick="pokazOnline()">👥 Odśwież online</button>
       <button onclick="pokazVisits()">📊 Odśwież odwiedziny</button>
     </div>
+
     <div id="czas"></div>
   </div>
 
-  <footer>© 2025 dc frvvnek_</footer>
+  <footer>© 2025 <span>dc frvvnek_</span></footer>
 
   <script>
-    const gameId = "72616071378651";
+    const gameId = "8364494401"; // Twój Universe ID
 
     async function pobierzDane() {
-      const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${gameId}`);
-      const data = await res.json();
-      return data.data[0];
+      try {
+        const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${gameId}`);
+        const data = await res.json();
+        return data.data[0];
+      } catch (err) {
+        console.error("Błąd podczas pobierania danych:", err);
+        return null;
+      }
     }
 
     async function pokazOnline() {
       const info = await pobierzDane();
-      const count = info?.playing || 0;
-      document.getElementById("online").textContent = count.toLocaleString();
-      aktualizujCzas();
+      if (info) {
+        document.getElementById("online").textContent = info.playing.toLocaleString();
+        aktualizujCzas();
+      }
     }
 
     async function pokazVisits() {
       const info = await pobierzDane();
-      const visits = info?.visits || 0;
-      document.getElementById("visits").textContent = visits.toLocaleString();
-      aktualizujCzas();
+      if (info) {
+        document.getElementById("visits").textContent = info.visits.toLocaleString();
+        aktualizujCzas();
+      }
     }
 
     async function autoUpdate() {
       const info = await pobierzDane();
-      const count = info?.playing || 0;
-      const visits = info?.visits || 0;
-      document.getElementById("online").textContent = count.toLocaleString();
-      document.getElementById("visits").textContent = visits.toLocaleString();
-      aktualizujCzas();
+      if (info) {
+        document.getElementById("online").textContent = info.playing.toLocaleString();
+        document.getElementById("visits").textContent = info.visits.toLocaleString();
+        aktualizujCzas();
+      }
     }
 
     function aktualizujCzas() {
-      document.getElementById("czas").textContent = 
+      document.getElementById("czas").textContent =
         "🔄 Ostatnia aktualizacja: " + new Date().toLocaleTimeString();
     }
 
-    // Auto-update co 5 sekund
+    // Auto-update co 10 sekund
     autoUpdate();
-    setInterval(autoUpdate, 5000);
+    setInterval(autoUpdate, 10000);
   </script>
 </body>
 </html>
