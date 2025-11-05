@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Status gry Roblox</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0d1117;
+      color: white;
+      text-align: center;
+      margin-top: 100px;
+    }
+    button {
+      background: #00a2ff;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #007acc;
+    }
+    #wynik {
+      margin-top: 20px;
+      font-size: 22px;
+    }
+    #czas {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Status twojej gry Roblox</h1>
+  <button onclick="pokazOnline()">👥 Ile osób gra teraz</button>
+  <button onclick="pokazVisits()">📊 Ile osób zagrało ogółem</button>
+  <div id="wynik"></div>
+  <div id="czas"></div>
+
+  <script>
+    const gameId = "90166277380078";
+
+    async function pobierzDane() {
+      const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${gameId}`);
+      const data = await res.json();
+      return data.data[0];
+    }
+
+    async function pokazOnline() {
+      const info = await pobierzDane();
+      const count = info?.playing || 0;
+      document.getElementById("wynik").textContent = `🎮 Teraz gra: ${count} osób`;
+    }
+
+    async function pokazVisits() {
+      const info = await pobierzDane();
+      const visits = info?.visits || 0;
+      document.getElementById("wynik").textContent = `📈 Łącznie zagrało: ${visits.toLocaleString()} osób`;
+    }
+
+    async function autoUpdate() {
+      const info = await pobierzDane();
+      const count = info?.playing || 0;
+      const visits = info?.visits || 0;
+      document.getElementById("wynik").innerHTML =
+        `🎮 Teraz gra: ${count} osób<br>📈 Łącznie zagrało: ${visits.toLocaleString()} osób`;
+      document.getElementById("czas").textContent =
+        `🔄 Ostatnia aktualizacja: ${new Date().toLocaleTimeString()}`;
+    }
+
+    // 🔁 Aktualizuj automatycznie co 5 sekund
+    autoUpdate();
+    setInterval(autoUpdate, 5000);
+  </script>
+</body>
+</html>
